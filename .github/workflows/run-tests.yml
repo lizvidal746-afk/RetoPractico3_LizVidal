@@ -1,0 +1,134 @@
+name: Automatización E2E + API Testing
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master, develop ]
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Ejecutar Pruebas
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    strategy:
+      matrix:
+        node-version: [ 18.x ]
+
+    steps:
+      - name: 📥 Checkout del código
+        uses: actions/checkout@v3
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: 📚 Instalar dependencias
+        run: npm ci
+
+      - name: 🎭 Instalar navegadores de Playwright
+        run: npx playwright install --with-deps
+
+      - name: 📁 Crear directorio de reportes
+        run: mkdir -p reports/screenshots
+
+      - name: 🧪 Ejecutar Pruebas E2E
+        run: npm run test:e2e
+        env:
+          HEADLESS: true
+          BASE_URL_UI: https://www.saucedemo.com
+          USERNAME: standard_user
+          PASSWORD: secret_sauce
+
+      - name: 🌐 Ejecutar Pruebas API
+        run: npm run test:api
+        env:
+          BASE_URL_API: https://dummyjson.com
+          API_USERNAME: kminchelle
+          API_PASSWORD: 0lelplR
+        continue-on-error: true
+
+      - name: 📊 Generar Reporte HTML
+        if: always()
+        run: echo "✅ Reportes generados en reports/"
+
+      - name: 📤 Subir Reportes como Artefactos
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-reports-${{ github.run_number }}
+          path: reports/
+          retention-days: 30
+
+      - name: 📸 Subir Screenshots de Fallos
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: failure-screenshots-${{ github.run_number }}
+          path: reports/screenshots/
+          retention-days: 30
+
+      - name: 💬 Comentar Resultados en PR
+        if: always() && github.event_name == 'pull_request'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            const reportPath = './reports/report.json';
+            
+            if (fs.existsSync(reportPath)) {
+              try {
+                const report = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
+                let totalScenarios = 0;
+                let passedCount = 0;
+                let failedCount = 0;
+                
+                report.forEach(feature => {
+                  if (feature.elements) {
+                    feature.elements.forEach(scenario => {
+                      totalScenarios++;
+                      const failed = scenario.steps.some(step => step.result.status === 'failed');
+                      if (failed) {
+                        failedCount++;
+                      } else {
+                        passedCount++;
+                      }
+                    });
+                  }
+                });
+                
+                const successRate = totalScenarios > 0 ? ((passedCount/totalScenarios)*100).toFixed(2) : 0;
+                
+                const comment = '## Test Results (Run #${{ github.run_number }})\\n\\n' +
+                  '| Status | Count |\\n' +
+                  '|--------|-------|\\n' +
+                  '| Passed | ' + passedCount + ' |\\n' +
+                  '| Failed | ' + failedCount + ' |\\n' +
+                  '| Total | ' + totalScenarios + ' |\\n' +
+                  '| Success Rate | ' + successRate + '% |\\n\\n' +
+                  '[Download Reports](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})';
+                
+                github.rest.issues.createComment({
+                  issue_number: context.issue.number,
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  body: comment
+                });
+              } catch (e) {
+                console.log('Error procesando reporte:', e);
+              }
+            }
+        continue-on-error: true
+
+      - name: ✅ Resumen de Ejecución
+        if: always()
+        run: |
+          echo "=== RESUMEN DE EJECUCIÓN ==="
+          echo "Run ID: ${{ github.run_id }}"
+          echo "Repository: ${{ github.repository }}"
+          echo "Branch: ${{ github.ref }}"
+          echo "Reportes disponibles en Artifacts"
