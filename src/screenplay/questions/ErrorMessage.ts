@@ -3,6 +3,7 @@
  * Pregunta que obtiene el mensaje de error después de un intento de login fallido.
  */
 
+// @ts-ignore - CommonJS require compatibility
 const { UseBrowser } = require('../abilities/UseBrowser');
 
 class ErrorMessageQuestion {
