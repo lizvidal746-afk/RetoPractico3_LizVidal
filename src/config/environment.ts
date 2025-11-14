@@ -3,11 +3,11 @@
  * Carga y valida las variables de entorno necesarias para el proyecto.
  */
 
-import * as dotenv from 'dotenv';
+const dotenv = require('dotenv');
 
 dotenv.config();
 
-export const config = {
+const config = {
   // UI URLs
   baseUrlUI: process.env.BASE_URL_UI || 'https://www.saucedemo.com',
 
@@ -15,8 +15,8 @@ export const config = {
   baseUrlAPI: process.env.BASE_URL_API || 'https://dummyjson.com',
 
   // Credenciales UI
-  uiUsername: process.env.USERNAME || 'standard_user',
-  uiPassword: process.env.PASSWORD || 'secret_sauce',
+  uiUsername: process.env.TEST_USERNAME || 'standard_user',
+  uiPassword: process.env.TEST_PASSWORD || 'secret_sauce',
 
   // Credenciales API
   apiUsername: process.env.API_USERNAME || 'kminchelle',
@@ -31,4 +31,4 @@ export const config = {
   screenshotDir: process.env.SCREENSHOT_DIR || './reports/screenshots',
 };
 
-export default config;
+module.exports = config;

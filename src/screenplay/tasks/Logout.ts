@@ -3,12 +3,11 @@
  * Tarea que permite hacer logout de la aplicación.
  */
 
-import { Page } from 'playwright';
-import { Actor } from '../actors/Actor';
+const { UseBrowser } = require('../abilities/UseBrowser');
 
-export class Logout {
-  async performAs(actor: Actor): Promise<void> {
-    const page: Page = actor.abilityTo(this.constructor as any).page;
+class Logout {
+  async performAs(actor) {
+    const page = actor.abilityTo(UseBrowser).page;
 
     // Abrir el menú lateral
     await page.click('button.bm-burger-button');
@@ -19,3 +18,5 @@ export class Logout {
     await page.waitForURL('**/index.html');
   }
 }
+
+module.exports = { Logout };

@@ -3,13 +3,14 @@
  * Pregunta que obtiene el mensaje de error después de un intento de login fallido.
  */
 
-import { Page } from 'playwright';
-import { Actor } from '../actors/Actor';
+const { UseBrowser } = require('../abilities/UseBrowser');
 
-export class ErrorMessage {
-  async answeredBy(actor: Actor): Promise<string> {
-    const page: Page = actor.abilityTo(this.constructor as any).page;
+class ErrorMessage {
+  async answeredBy(actor) {
+    const page = actor.abilityTo(UseBrowser).page;
     const errorElement = page.locator('h3[data-test="error"]');
     return await errorElement.textContent() || '';
   }
 }
+
+module.exports = { ErrorMessage };

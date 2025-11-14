@@ -3,22 +3,23 @@
  * Habilidad que permite al actor realizar llamadas HTTP a una API.
  */
 
-import { APIRequestContext } from 'playwright';
+class CallAPI {
+  constructor(apiContext) {
+    this.apiContext = apiContext;
+    this.token = undefined;
+  }
 
-export class CallAPI {
-  private token?: string;
-
-  constructor(public apiContext: APIRequestContext) {}
-
-  static with(apiContext: APIRequestContext): CallAPI {
+  static with(apiContext) {
     return new CallAPI(apiContext);
   }
 
-  setToken(token: string): void {
+  setToken(token) {
     this.token = token;
   }
 
-  getToken(): string | undefined {
+  getToken() {
     return this.token;
   }
 }
+
+module.exports = { CallAPI };

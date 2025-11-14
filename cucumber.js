@@ -1,5 +1,4 @@
-
-export default {
+module.exports = {
   default: {
     require: [
       'src/support/hooks.ts',
@@ -10,12 +9,12 @@ export default {
       'tests/e2e/features/**/*.feature',
       'tests/api/features/**/*.feature'
     ],
-    publishQuiet: true,
     format: [
       'progress',
       'json:reports/report.json',
       'html:reports/cucumber-report.html'
     ],
-    requireModule: ['ts-node/register']
+    requireModule: ['ts-node/register'],
+    timeout: '120000'
   }
 };

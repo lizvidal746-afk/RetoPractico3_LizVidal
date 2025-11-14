@@ -5,13 +5,15 @@ Suite de pruebas automatizadas que combina:
 - ✅ Pruebas de API usando [DummyJSON](https://dummyjson.com/docs)
 - ✅ Pipeline CI/CD funcional en GitHub Actions
 
+**Estado:** ✅ Operativo | **Último test:** 14/11/2025 | **Node:** v20.19.5
+
 ---
 
 ## 🛠️ Tecnologías
 
 | Herramienta | Versión | Propósito |
 |---|---|---|
-| **Node.js** | 18+ | Runtime de JavaScript |
+| **Node.js** | 20.x LTS | Runtime de JavaScript |
 | **TypeScript** | 5.3.3 | Lenguaje de programación tipado |
 | **Playwright** | 1.40.1 | Automatización de navegadores |
 | **Cucumber.js** | 9.5.1 | Framework BDD |
@@ -24,25 +26,58 @@ Suite de pruebas automatizadas que combina:
 
 ### Instalación
 
-```powershell
+```bash
+# Clonar repositorio
+git clone https://github.com/lizvidal746-afk/RetoPractico3_LizVidal.git
+cd RetoPractico3_LizVidal
+
+# Instalar dependencias
 npm install
-npx playwright install
+
+# Instalar navegadores Playwright
+npx playwright install chromium
 ```
 
-### Ejecutar Pruebas
+### Ejecutar Pruebas Localmente
 
-```powershell
-npm run test:e2e    # Pruebas E2E (UI)
-npm run test:api    # Pruebas API
-npm run test:all    # Todas las pruebas
+```bash
+# Pruebas E2E (Sauce Demo)
+npm run test:e2e
+
+# Pruebas API (DummyJSON)
+npm run test:api
+
+# Todas las pruebas
+npm run test:all
 ```
 
-### Resultados
+### Resultados Locales
 
 Los reportes se generan en:
-- `reports/cucumber-report.html` - Reporte visual
-- `reports/report.json` - Datos en JSON
-- `reports/screenshots/` - Capturas de fallos
+- **HTML Visual:** `reports/cucumber-report.html` - Abre en navegador
+- **JSON Data:** `reports/report.json` - Datos estructurados
+- **Screenshots:** `reports/screenshots/` - Capturas de fallos
+- **Ejecución:** `REPORTE_EJECUCION.md` - Summary detallado
+
+---
+
+## 🔄 CI/CD - GitHub Actions
+
+### Pipeline Automático
+
+El pipeline se ejecuta automáticamente en:
+- ✅ **Push** a ramas `main` o `develop`
+- ✅ **Pull Requests** hacia `main` o `develop`
+- ✅ **Workflow Dispatch** - Ejecución manual desde GitHub
+
+### Ver Resultados en GitHub
+
+1. Ir a: **Actions** → **Tests E2E + API - CI/CD Pipeline**
+2. Seleccionar el último **Run**
+3. Descargar **Artifacts:**
+   - `cucumber-report` - Reporte HTML
+   - `test-results` - JSON
+   - `screenshots` - Capturas
 
 ---
 

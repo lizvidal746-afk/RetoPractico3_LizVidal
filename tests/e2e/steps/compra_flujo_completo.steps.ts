@@ -1,87 +1,75 @@
-/**
- * tests/e2e/steps/compra_flujo_completo.steps.ts
- * Step definitions para los escenarios de compra.
- */
+const { Given, When, Then } = require('@cucumber/cucumber');
+const { expect } = require('@playwright/test');
+const config = require('../../../src/config/environment');
+const { LoginWithValidCredentials } = require('../../../src/screenplay/tasks/LoginWithValidCredentials');
+const { LoginWithInvalidCredentials } = require('../../../src/screenplay/tasks/LoginWithInvalidCredentials');
+const { AddProductToCart } = require('../../../src/screenplay/tasks/AddProductToCart');
+const { Checkout } = require('../../../src/screenplay/tasks/Checkout');
+const { Logout } = require('../../../src/screenplay/tasks/Logout');
+const { ErrorMessage } = require('../../../src/screenplay/questions/ErrorMessage');
+const { CartItems } = require('../../../src/screenplay/questions/CartItems');
+const { CheckoutCompletionMessage } = require('../../../src/screenplay/questions/CheckoutCompletionMessage');
+const { UseBrowser } = require('../../../src/screenplay/abilities/UseBrowser');
 
-import { Given, When, Then, Before } from '@cucumber/cucumber';
-import { expect } from '@playwright/test';
-import { ScreenplayWorld } from '../../src/support/world';
-import { config } from '../../src/config/environment';
-import { LoginWithValidCredentials } from '../../src/screenplay/tasks/LoginWithValidCredentials';
-import { LoginWithInvalidCredentials } from '../../src/screenplay/tasks/LoginWithInvalidCredentials';
-import { AddProductToCart } from '../../src/screenplay/tasks/AddProductToCart';
-import { Checkout } from '../../src/screenplay/tasks/Checkout';
-import { Logout } from '../../src/screenplay/tasks/Logout';
-import { IsLoggedIn } from '../../src/screenplay/questions/IsLoggedIn';
-import { ErrorMessage } from '../../src/screenplay/questions/ErrorMessage';
-import { CartItems } from '../../src/screenplay/questions/CartItems';
-import { CheckoutCompletionMessage } from '../../src/screenplay/questions/CheckoutCompletionMessage';
-import { Page } from 'playwright';
-
-// Helpers para acceder a Page desde el actor
-function getPage(world: ScreenplayWorld): Page {
-  return (world.theActor().abilityTo(Object) as any).page;
-}
-
-Given('que el usuario está en la página de login de Sauce Demo', async function (this: ScreenplayWorld) {
-  const page = getPage(this);
+Given('que el usuario está en la página de login de Sauce Demo', async function () {
+  const page = this.theActor().abilityTo(UseBrowser).page;
   await page.goto(config.baseUrlUI, { waitUntil: 'networkidle' });
-  console.log(`✓ Usuario en la página: ${config.baseUrlUI}`);
+  console.log('Usuario en la página');
 });
 
-When('el usuario inicia sesión con credenciales válidas', async function (this: ScreenplayWorld) {
+When('el usuario inicia sesión con credenciales válidas', async function () {
   const actor = this.theActor();
   await new LoginWithValidCredentials().performAs(actor);
-  console.log('✓ Login exitoso con credenciales válidas');
+  console.log('Login exitoso');
 });
 
-When('el usuario agrega un producto al carrito', async function (this: ScreenplayWorld) {
+When('el usuario agrega un producto al carrito', async function () {
   const actor = this.theActor();
   await new AddProductToCart().performAs(actor);
-  console.log('✓ Producto agregado al carrito');
+  console.log('Producto agregado');
 });
 
-When('el usuario procede al checkout', async function (this: ScreenplayWorld) {
+When('el usuario procede al checkout', async function () {
   const actor = this.theActor();
   await new Checkout().performAs(actor);
-  console.log('✓ Checkout completado');
+  console.log('Checkout completado');
 });
 
-Then('la compra debe completarse exitosamente', async function (this: ScreenplayWorld) {
+Then('la compra debe completarse exitosamente', async function () {
   const actor = this.theActor();
   const message = await new CheckoutCompletionMessage().answeredBy(actor);
   expect(message).toContain('Thank you');
-  console.log(`✓ Mensaje de confirmación: ${message}`);
+  console.log('Compra exitosa');
 });
 
-When('el usuario intenta iniciar sesión con credenciales inválidas', async function (this: ScreenplayWorld) {
+When('el usuario intenta iniciar sesión con credenciales inválidas', async function () {
   const actor = this.theActor();
   await new LoginWithInvalidCredentials().performAs(actor);
-  console.log('✓ Intento de login con credenciales inválidas');
+  console.log('Intento de login fallido');
 });
 
-Then('debe aparecer un mensaje de error', async function (this: ScreenplayWorld) {
+Then('debe aparecer un mensaje de error', async function () {
   const actor = this.theActor();
   const error = await new ErrorMessage().answeredBy(actor);
   expect(error).toBeTruthy();
-  console.log(`✓ Mensaje de error detectado: ${error}`);
+  console.log('Error detectado');
 });
 
-When('el usuario hace logout', async function (this: ScreenplayWorld) {
+When('el usuario hace logout', async function () {
   const actor = this.theActor();
   await new Logout().performAs(actor);
-  console.log('✓ Logout completado');
+  console.log('Logout completado');
 });
 
-When('el usuario vuelve a iniciar sesión con credenciales válidas', async function (this: ScreenplayWorld) {
+When('el usuario vuelve a iniciar sesión con credenciales válidas', async function () {
   const actor = this.theActor();
   await new LoginWithValidCredentials().performAs(actor);
-  console.log('✓ Login exitoso nuevamente');
+  console.log('Nuevo login exitoso');
 });
 
-Then('el carrito debe estar vacío en la nueva sesión', async function (this: ScreenplayWorld) {
+Then('el carrito debe estar vacío en la nueva sesión', async function () {
   const actor = this.theActor();
   const cartCount = await new CartItems().answeredBy(actor);
   expect(cartCount).toBe(0);
-  console.log(`✓ Carrito vacío (items: ${cartCount})`);
+  console.log('Carrito vacio confirmado');
 });

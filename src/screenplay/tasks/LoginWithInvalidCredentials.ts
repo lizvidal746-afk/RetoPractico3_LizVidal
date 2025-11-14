@@ -3,19 +3,21 @@
  * Tarea que representa el intento de login con credenciales inválidas.
  */
 
-import { Page } from 'playwright';
-import { Actor } from '../actors/Actor';
-import { config } from '../../config/environment';
+const { UseBrowser } = require('../abilities/UseBrowser');
+const config = require('../../config/environment');
 
-export class LoginWithInvalidCredentials {
-  constructor(private username: string = 'invalid_user', private password: string = 'wrong_password') {}
+class LoginWithInvalidCredentials {
+  constructor(username = 'invalid_user', password = 'wrong_password') {
+    this.username = username;
+    this.password = password;
+  }
 
-  static with(username?: string, password?: string): LoginWithInvalidCredentials {
+  static with(username, password) {
     return new LoginWithInvalidCredentials(username, password);
   }
 
-  async performAs(actor: Actor): Promise<void> {
-    const page: Page = actor.abilityTo(this.constructor as any).page;
+  async performAs(actor) {
+    const page = actor.abilityTo(UseBrowser).page;
 
     // Navegar a la aplicación
     await page.goto(config.baseUrlUI, { waitUntil: 'networkidle' });
@@ -28,3 +30,5 @@ export class LoginWithInvalidCredentials {
     await page.click('input#login-button');
   }
 }
+
+module.exports = { LoginWithInvalidCredentials };

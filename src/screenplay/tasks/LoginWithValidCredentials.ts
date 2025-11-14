@@ -3,22 +3,24 @@
  * Tarea que representa el flujo de login con credenciales válidas.
  */
 
-import { Page } from 'playwright';
-import { Actor } from '../actors/Actor';
-import { config } from '../../config/environment';
+const { UseBrowser } = require('../abilities/UseBrowser');
+const config = require('../../config/environment');
 
-export class LoginWithValidCredentials {
-  constructor(private username: string = config.uiUsername, private password: string = config.uiPassword) {}
+class LoginWithValidCredentials {
+  constructor(username = config.uiUsername, password = config.uiPassword) {
+    this.username = username;
+    this.password = password;
+  }
 
-  static with(username?: string, password?: string): LoginWithValidCredentials {
+  static with(username, password) {
     return new LoginWithValidCredentials(username, password);
   }
 
-  async performAs(actor: Actor): Promise<void> {
-    const page: Page = actor.abilityTo(this.constructor as any).page;
+  async performAs(actor) {
+    const page = actor.abilityTo(UseBrowser).page;
 
     // Navegar a la aplicación
-    await page.goto(config.baseUrlUI, { waitUntil: 'networkidle' });
+    await page.goto(config.baseUrlUI, { timeout: 30000 });
 
     // Llenar credenciales
     await page.fill('input#user-name', this.username);
@@ -27,7 +29,11 @@ export class LoginWithValidCredentials {
     // Hacer clic en login
     await page.click('input#login-button');
 
-    // Esperar a que se cargue la página de inventario
-    await page.waitForURL('**/inventory.html', { waitUntil: 'networkidle' });
+    // Esperar a que aparezca el elemento del inventario (sin esperar navegación)
+    await page.waitForSelector('[data-test="inventory-list"]', { timeout: 60000 });
+    
+    console.log('✅ Login completado - Página de inventario cargada');
   }
 }
+
+module.exports = { LoginWithValidCredentials };

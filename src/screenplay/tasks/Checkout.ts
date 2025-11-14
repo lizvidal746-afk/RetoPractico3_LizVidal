@@ -3,22 +3,21 @@
  * Tarea que representa el flujo completo de checkout.
  */
 
-import { Page } from 'playwright';
-import { Actor } from '../actors/Actor';
+const { UseBrowser } = require('../abilities/UseBrowser');
 
-export class Checkout {
-  constructor(
-    private firstName: string = 'John',
-    private lastName: string = 'Doe',
-    private zipCode: string = '12345'
-  ) {}
+class Checkout {
+  constructor(firstName = 'John', lastName = 'Doe', zipCode = '12345') {
+    this.firstName = firstName;
+    this.lastName = lastName;
+    this.zipCode = zipCode;
+  }
 
-  static with(firstName?: string, lastName?: string, zipCode?: string): Checkout {
+  static with(firstName, lastName, zipCode) {
     return new Checkout(firstName, lastName, zipCode);
   }
 
-  async performAs(actor: Actor): Promise<void> {
-    const page: Page = actor.abilityTo(this.constructor as any).page;
+  async performAs(actor) {
+    const page = actor.abilityTo(UseBrowser).page;
 
     // Hacer clic en el carrito
     await page.click('a.shopping_cart_link');
@@ -42,3 +41,5 @@ export class Checkout {
     await page.waitForURL('**/checkout-complete.html');
   }
 }
+
+module.exports = { Checkout };

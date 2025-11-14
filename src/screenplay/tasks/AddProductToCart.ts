@@ -3,21 +3,24 @@
  * Tarea que permite agregar un producto al carrito.
  */
 
-import { Page } from 'playwright';
-import { Actor } from '../actors/Actor';
+const { UseBrowser } = require('../abilities/UseBrowser');
 
-export class AddProductToCart {
-  constructor(private productName: string = 'Sauce Labs Backpack') {}
+class AddProductToCart {
+  constructor(productName = 'Sauce Labs Backpack') {
+    this.productName = productName;
+  }
 
-  static named(productName: string): AddProductToCart {
+  static named(productName) {
     return new AddProductToCart(productName);
   }
 
-  async performAs(actor: Actor): Promise<void> {
-    const page: Page = actor.abilityTo(this.constructor as any).page;
+  async performAs(actor) {
+    const page = actor.abilityTo(UseBrowser).page;
 
     // Buscar el botón "Add to cart" del producto
     const addButton = page.locator(`button:has-text("Add to cart")`).first();
     await addButton.click();
   }
 }
+
+module.exports = { AddProductToCart };

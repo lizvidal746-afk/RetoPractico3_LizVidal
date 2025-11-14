@@ -1,38 +1,27 @@
-/**
- * src/support/hooks.ts
- * Hooks de Cucumber.
- * Aquí se inicializa y cierra el navegador antes y después de cada escenario.
- */
+const { Before, After, setDefaultTimeout } = require('@cucumber/cucumber');
+const { chromium } = require('playwright');
+const { ScreenplayWorld } = require('./world');
+const { UseBrowser } = require('../screenplay/abilities/UseBrowser');
+const config = require('../config/environment');
 
-import { Before, After, ITestCaseHookParameter } from '@cucumber/cucumber';
-import { chromium, Browser, Page } from 'playwright';
-import { ScreenplayWorld } from './world';
-import { config } from '../config/environment';
+// Aumentar timeout global de Cucumber a 120 segundos
+setDefaultTimeout(120 * 1000);
 
-let browser: Browser;
-let page: Page;
+let browser;
+let page;
 
-/**
- * Before: Se ejecuta antes de cada escenario.
- * Aquí abrimos el navegador y guardamos la página para que el Actor pueda usarla.
- */
-Before(async function (this: ScreenplayWorld) {
+Before(async function () {
   browser = await chromium.launch({ 
     headless: config.headless,
     slowMo: config.slowMo
   });
   page = await browser.newPage();
 
-  // Guardamos la página como una habilidad del actor
-  this.theActor().can({ page });
+  this.theActor().can(UseBrowser.with(page));
 });
 
-/**
- * After: Se ejecuta después de cada escenario.
- * Si falla, toma un screenshot. Luego cierra el navegador.
- */
-After(async function (this: ScreenplayWorld, scenario: ITestCaseHookParameter) {
-  if (scenario.result?.status === 'failed') {
+After(async function (scenario) {
+  if (scenario.result?.status === 'FAILED') {
     const screenshotPath = `${config.screenshotDir}/${Date.now()}-${scenario.pickle.name.replace(/\s+/g, '_')}.png`;
     await page.screenshot({ path: screenshotPath });
     console.log(`📸 Screenshot guardado: ${screenshotPath}`);

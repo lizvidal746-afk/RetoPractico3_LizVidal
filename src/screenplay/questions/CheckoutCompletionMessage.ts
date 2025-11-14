@@ -3,13 +3,14 @@
  * Pregunta que obtiene el mensaje de confirmación de compra.
  */
 
-import { Page } from 'playwright';
-import { Actor } from '../actors/Actor';
+const { UseBrowser } = require('../abilities/UseBrowser');
 
-export class CheckoutCompletionMessage {
-  async answeredBy(actor: Actor): Promise<string> {
-    const page: Page = actor.abilityTo(this.constructor as any).page;
+class CheckoutCompletionMessage {
+  async answeredBy(actor) {
+    const page = actor.abilityTo(UseBrowser).page;
     const messageElement = page.locator('.complete-text');
     return await messageElement.textContent() || '';
   }
 }
+
+module.exports = { CheckoutCompletionMessage };

@@ -3,12 +3,13 @@
  * Pregunta que verifica si el usuario está autenticado (se ve el inventario).
  */
 
-import { Page } from 'playwright';
-import { Actor } from '../actors/Actor';
+const { UseBrowser } = require('../abilities/UseBrowser');
 
-export class IsLoggedIn {
-  async answeredBy(actor: Actor): Promise<boolean> {
-    const page: Page = actor.abilityTo(this.constructor as any).page;
+class IsLoggedIn {
+  async answeredBy(actor) {
+    const page = actor.abilityTo(UseBrowser).page;
     return await page.url().includes('inventory.html');
   }
 }
+
+module.exports = { IsLoggedIn };

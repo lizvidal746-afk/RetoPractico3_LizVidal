@@ -1,7 +1,6 @@
 {
   "name": "retopractico3_lizvidal",
   "version": "1.0.0",
-  "type": "module",
   "scripts": {
     "test:e2e": "cucumber-js --require-module ts-node/register tests/e2e/features",
     "test:api": "cucumber-js --require-module ts-node/register tests/api/features",

@@ -3,12 +3,14 @@
  * Habilidad que permite al actor usar un navegador.
  */
 
-import { Page } from 'playwright';
+class UseBrowser {
+  constructor(page) {
+    this.page = page;
+  }
 
-export class UseBrowser {
-  constructor(public page: Page) {}
-
-  static with(page: Page): UseBrowser {
+  static with(page) {
     return new UseBrowser(page);
   }
 }
+
+module.exports = { UseBrowser };
