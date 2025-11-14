@@ -5,12 +5,12 @@
 
 const { UseBrowser } = require('../abilities/UseBrowser');
 
-class ErrorMessage {
-  async answeredBy(actor) {
+class ErrorMessageQuestion {
+  async answeredBy(actor: any) {
     const page = actor.abilityTo(UseBrowser).page;
     const errorElement = page.locator('h3[data-test="error"]');
     return await errorElement.textContent() || '';
   }
 }
 
-module.exports = { ErrorMessage };
+module.exports = { ErrorMessage: ErrorMessageQuestion };

@@ -1,29 +1,33 @@
 // src/support/world.ts
 
 const { setWorldConstructor, World } = require('@cucumber/cucumber');
-const { Actor } = require('../screenplay/actors/Actor');
-const { Cast } = require('../screenplay/actors/Cast');
+const { Actor: ActorClass } = require('../screenplay/actors/Actor');
+const { Cast: CastClass } = require('../screenplay/actors/Cast');
 
-class ScreenplayWorld extends World {
-  constructor(options) {
+class ScreenplayWorldImpl extends World {
+  actor: any;
+  cast: any;
+  sharedData: any;
+
+  constructor(options: any) {
     super(options);
     this.actor = null;
-    this.cast = new Cast();
+    this.cast = new CastClass();
     this.sharedData = new Map();
   }
 
-  theActor(name = 'Usuario Web') {
+  theActor(name: string = 'Usuario Web') {
     if (!this.actor) {
       this.actor = this.cast.actorCalled(name);
     }
     return this.actor;
   }
 
-  setData(key, value) {
+  setData(key: any, value: any) {
     this.sharedData.set(key, value);
   }
 
-  getData(key) {
+  getData(key: any) {
     return this.sharedData.get(key);
   }
 
@@ -32,6 +36,5 @@ class ScreenplayWorld extends World {
   }
 }
 
-setWorldConstructor(ScreenplayWorld);
-module.exports = { ScreenplayWorld };
-setWorldConstructor(ScreenplayWorld);
+setWorldConstructor(ScreenplayWorldImpl);
+module.exports = { ScreenplayWorld: ScreenplayWorldImpl };

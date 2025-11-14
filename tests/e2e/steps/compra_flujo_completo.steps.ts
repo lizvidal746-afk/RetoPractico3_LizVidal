@@ -4,6 +4,7 @@ const config = require('../../../src/config/environment');
 const { LoginWithValidCredentials } = require('../../../src/screenplay/tasks/LoginWithValidCredentials');
 const { LoginWithInvalidCredentials } = require('../../../src/screenplay/tasks/LoginWithInvalidCredentials');
 const { AddProductToCart } = require('../../../src/screenplay/tasks/AddProductToCart');
+const { RemoveProductFromCart } = require('../../../src/screenplay/tasks/RemoveProductFromCart');
 const { Checkout } = require('../../../src/screenplay/tasks/Checkout');
 const { Logout } = require('../../../src/screenplay/tasks/Logout');
 const { ErrorMessage } = require('../../../src/screenplay/questions/ErrorMessage');
@@ -95,13 +96,31 @@ When('el usuario vuelve a iniciar sesión con credenciales válidas', async func
   await ScreenshotUtil.takeScreenshotWithLabel(actor, 'escenario_3_carrito_persistente', '02_nuevo_login');
 });
 
+When('el usuario ve el producto en el carrito', async function () {
+  const actor = this.theActor();
+  const cartCount = await new CartItems().answeredBy(actor);
+  expect(cartCount).toBeGreaterThan(0);
+  console.log(`✅ Producto confirmado en carrito: ${cartCount} item(s)`);
+  
+  // Screenshot 3: Producto en el carrito
+  await ScreenshotUtil.takeScreenshotWithLabel(actor, 'escenario_3_carrito_persistente', '03_producto_en_carrito');
+});
+
+When('el usuario remueve el producto del carrito', async function () {
+  const actor = this.theActor();
+  await new RemoveProductFromCart().performAs(actor);
+  console.log('Producto removido');
+  
+  // Screenshot 4: Pantalla de remover producto
+  await ScreenshotUtil.takeScreenshotWithLabel(actor, 'escenario_3_carrito_persistente', '04_producto_removido');
+});
+
 Then('el carrito debe estar vacío en la nueva sesión', async function () {
   const actor = this.theActor();
   const cartCount = await new CartItems().answeredBy(actor);
-  // Nota: Sauce Demo persiste el carrito en la sesión, así que aceptamos 0 o 1
-  expect([0, 1]).toContain(cartCount);
-  console.log(`✅ Carrito confirmado con ${cartCount} item(s)`);
+  expect(cartCount).toBe(0);
+  console.log(`✅ Carrito vacío confirmado: ${cartCount} items`);
   
-  // Screenshot 3: Estado del carrito en nueva sesión
-  await ScreenshotUtil.takeScreenshotWithLabel(actor, 'escenario_3_carrito_persistente', '03_carrito_persistente');
+  // Screenshot 5: Carrito vacío
+  await ScreenshotUtil.takeScreenshotWithLabel(actor, 'escenario_3_carrito_persistente', '05_carrito_vacio');
 });

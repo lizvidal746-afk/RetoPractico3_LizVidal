@@ -5,13 +5,21 @@
 
 const { UseBrowser } = require('../abilities/UseBrowser');
 
-class CartItems {
-  async answeredBy(actor) {
+class CartItemsQuestion {
+  async answeredBy(actor: any) {
     const page = actor.abilityTo(UseBrowser).page;
     const badge = page.locator('.shopping_cart_badge');
+    
+    // Verificar si el badge existe
+    const isVisible = await badge.isVisible().catch(() => false);
+    
+    if (!isVisible) {
+      return 0;
+    }
+    
     const count = await badge.textContent();
     return count ? parseInt(count, 10) : 0;
   }
 }
 
-module.exports = { CartItems };
+module.exports = { CartItems: CartItemsQuestion };

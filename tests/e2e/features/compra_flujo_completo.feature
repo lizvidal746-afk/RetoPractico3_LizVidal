@@ -18,4 +18,6 @@ Feature: Validación de flujo de compra en Sauce Demo
     And el usuario agrega un producto al carrito
     And el usuario hace logout
     And el usuario vuelve a iniciar sesión con credenciales válidas
+    And el usuario ve el producto en el carrito
+    And el usuario remueve el producto del carrito
     Then el carrito debe estar vacío en la nueva sesión

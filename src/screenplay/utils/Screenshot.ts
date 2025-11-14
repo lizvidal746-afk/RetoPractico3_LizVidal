@@ -6,7 +6,7 @@
 const path = require('path');
 const cfg = require('../../config/environment');
 
-class ScreenshotUtil {
+class ScreenshotUtilClass {
   static async takeScreenshot(actor: any, stepName: string) {
     try {
       const UseBrowser = require('../abilities/UseBrowser').UseBrowser;
@@ -64,4 +64,4 @@ class ScreenshotUtil {
   }
 }
 
-module.exports = { ScreenshotUtil };
+module.exports = { ScreenshotUtil: ScreenshotUtilClass };
